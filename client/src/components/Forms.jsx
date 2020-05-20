@@ -14,13 +14,13 @@ const Forms = props => {
         if(props.id!=='0') {
             setCmd('edit');
             axios.get(`http://localhost:8000/api/products/${props.id}`)
-                .then(response=>{
-                    setTitle(response.data.title);
-                    setPrice(response.data.price);
-                    setDescription(response.data.description);
-                });
+            .then(response=>{
+                setTitle(response.data.title);
+                setPrice(response.data.price);
+                setDescription(response.data.description);
+            });
         }
-    }, []);
+    }, [props]);
 
     const submit = e => {
         e.preventDefault();

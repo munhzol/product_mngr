@@ -1,12 +1,17 @@
 import React,{ useEffect,useState } from 'react';
 import axios from 'axios';
-import { Link,navigate } from '@reach/router';
+import { Link } from '@reach/router';
+
+import Dialog from './Dialog'
 
 const Products = () => {
 
     const [products, setProducts] = useState([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [productId, setProductId] = useState(0);
+
+    const [showProductDetailDialog, setShowProductDetailDialog] = useState(false);
+    const [productDetail, setProductDetail] = useState({});
 
     useEffect(()=>{
         loadProducts();
@@ -18,6 +23,7 @@ const Products = () => {
     }
 
     const showDelete = (e,id) => {
+        e.preventDefault();
         setShowDeleteDialog(true);
         setProductId(id);
     };
@@ -28,7 +34,13 @@ const Products = () => {
             url:`http://localhost:8000/api/products/${productId}`
         }).then(()=>loadProducts());
         setShowDeleteDialog(false);
-    }
+    };
+
+    const viewDetail = (e,product) => {
+        e.preventDefault();
+        setShowProductDetailDialog(true);
+        setProductDetail(product);
+    };
     
   return (
     <div>
@@ -79,7 +91,7 @@ const Products = () => {
                                     {i+1}
                                 </td>
                                 <td>
-                                    {rw.title}
+                                    <a href="!#" onClick={e=>viewDetail(e,rw)}>{rw.title}</a>
                                 </td>
                                 <td>
                                     ${rw.price}
@@ -89,7 +101,7 @@ const Products = () => {
                                 </td>
                                 <td>
                                     <Link to={`/forms/${rw._id}`}>Edit</Link> &nbsp;
-                                    <a onClick={e=>showDelete(e,rw._id)}>Delete</a>
+                                    <a href="!#" onClick={e=>showDelete(e,rw._id)}>Delete</a>
                                     {/* <Link to={`/delete/${rw._id}`}>Delete</Link> */}
                                 </td>
                             </tr>
@@ -98,22 +110,23 @@ const Products = () => {
                 </tbody>
             </table>
             
-            <div className={showDeleteDialog?'modal  is-active':'modal'}>
-                <div className="modal-background"></div>
-                <div className="modal-card">
-                <header className="modal-card-head">
-                    <p className="modal-card-title">Delete a record</p>
-                    <button className="delete" aria-label="close"></button>
-                </header>
-                <section className="modal-card-body">
-                    Do you want delete this product?
-                </section>
-                <footer className="modal-card-foot is-centered">
-                    <button onClick={e=>deleteProduct(e)}  className="button is-danger">Delete</button>
-                    <button onClick={e=>setShowDeleteDialog(false)} className="button is-narrow">Cancel</button>
-                </footer>
-                </div>
-            </div>
+                
+            <Dialog title="Confirm delete?" btnClass="is-danger" cancel="true" btnTitle="" btnAction={deleteProduct} active={showDeleteDialog} setActive={setShowDeleteDialog}>
+                Do you really want delete this product?
+            </Dialog>
+
+            <Dialog title="Product Detail" btnClass="is-info" active={showProductDetailDialog} setActive={setShowProductDetailDialog}>
+                <p>
+                {productDetail.title}
+                </p>
+                <p>
+                {productDetail.price}
+                </p>
+                <p>
+                {productDetail.description}
+                </p>
+            </Dialog>
+
 
         </div>
         
